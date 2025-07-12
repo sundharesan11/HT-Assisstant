@@ -96,7 +96,7 @@ mood_tracker_agent = Agent(
     name="mood_tracker_agent",
     role="Mood Tracker Agent",
     tools=[log_mood_entry, get_mood_history],
-    model=OpenAIChat(id="o4-mini-2025-04-16"),
+    model=OpenAIChat(id="gpt-4.1-2025-04-14"),
     storage=user_storage,
     memory=mood_memory,
     enable_agentic_memory=True,

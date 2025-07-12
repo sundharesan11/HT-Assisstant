@@ -75,7 +75,8 @@ meal_planner_agent = Agent(
     role="Meal Planner Agent",
     tools = [get_user_by_id, get_cgm_context],
     memory=mood_memory,
-    model=OpenAIChat(id="gpt-4o-mini"),
+    storage=user_storage,
+    model=OpenAIChat(id="gpt-4.1-2025-04-14"),
     instructions="""
     When given a user_id, fetch the user’s dietary preferences, medical conditions, recent mood, and latest glucose reading with the tools provided.
     Generate a 3-meal adaptive plan that aligns with these constraints and promotes health stability.

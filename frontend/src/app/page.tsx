@@ -46,7 +46,7 @@ const agent = {
 // Dashboard component
 function Dashboard() {
 
-  const userId = 100;
+  const userId = 4;
   type CGMEntry = {
     timestamp: string;
     glucose_level: number | string;

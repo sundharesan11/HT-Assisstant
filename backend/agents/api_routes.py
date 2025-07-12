@@ -56,13 +56,15 @@ def get_cgm_history(user_id: int):
 
 @router.post("/api/log-food")
 def log_food(description: str):
-    response: RunResponse = food_intake_agent.run(f"{description}")    
+    response: RunResponse = food_intake_agent.run(f"{description}")  
+    pprint_run_response(response)  
     return {"food_log": response.content}
 
 
 @router.post("/api/meal_generate")
 def generate_meal(user_id: str):
     response: RunResponse = meal_planner_agent.run(f"my user id is {user_id}")
+    pprint_run_response(response)
     return {"meal_plan": response.content}
 
 @router.post("/api/user-greeting")

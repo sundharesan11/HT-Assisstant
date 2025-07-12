@@ -14,7 +14,7 @@ from meal_generate import *
 interrupt_agent = Agent(
     name="interrupt_agent",
     role="Interrupt Agent (General Q&A)",
-    model=OpenAIChat(id="o4-mini-2025-04-16"),
+    model=OpenAIChat(id="gpt-4.1-2025-04-14"),
     memory=mood_memory,
     instructions="""
     You are a general-purpose assistant.
@@ -40,9 +40,10 @@ healthcare_team = Team(
     tools=[ReasoningTools(add_instructions=True)],
     instructions="""
     You are a multi-agent healthcare assistant system focused on personalized support, wellness tracking, and meal planning.
+    you have below listed agents in your team and use them to assist the user based on their needs keeping the context of the user after greeting them throughout the conversation.
 
         Each agent in your team serves a specialized role.
-        1. **Greeting Agent**  - for greeeting the user given the user_id
+        1. **Greeting Agent**  - always greet the user given their user_id.
         2. **Mood Tracker Agent**  - to log and analyze user moods.
         3. **CGM Agent (Continuous Glucose Monitor)**  - to log glucose readings and provide health insights.
         4. **Food Intake Agent**  - to log meals and analyze macronutrient content.
@@ -51,6 +52,7 @@ healthcare_team = Team(
         - Always active and listening for unrelated or general questions.
 
         Ensure context-aware coordination:
+        - keep the context of user throughout the conversation
         - Share relevant data between agents (e.g., use mood and CGM data in meal planning).
         - Always maintain a supportive, conversational tone.
         - Respond gracefully if the user asks for help, repeats instructions, or switches context.

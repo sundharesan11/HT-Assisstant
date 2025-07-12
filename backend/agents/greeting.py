@@ -47,9 +47,9 @@ greeting_agent = Agent(
     name="greeting_agent",
     tools=[get_user_by_id],
     role="Greeting Agent",
-    model=OpenAIChat(id="o4-mini-2025-04-16"),
+    model=OpenAIChat(id="gpt-4.1-2025-04-14"),
     instructions="""
-    When provided with a user_id, call the tool and fetch information about the user and greet them by name and city.
+    Provided a user_id, call the tool and fetch information about the user and greet them by name and city.
     If the ID is invalid, ask for a valid one before continuing.
     """,
     markdown=True,

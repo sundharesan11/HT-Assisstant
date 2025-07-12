@@ -2,7 +2,7 @@ from agno.agent.agent import Agent
 from agno.models.openai import OpenAIChat
 import sqlite3
 from datetime import datetime
-
+from mood_log import *
 
 def log_glucose_reading(user_id: int, glucose_level: int, db_path: str = "../data/users.db") -> str:
     """
@@ -42,7 +42,9 @@ cgm_agent = Agent(
     name="cgm_agent",
     role="CGM Agent",
     tools=[log_glucose_reading],
-    model=OpenAIChat(id="o4-mini-2025-04-16"),
+    model=OpenAIChat(id="gpt-4.1-2025-04-14"),
+    memory=mood_memory,
+    storage=user_storage,
     instructions="""
     When given a user_id and a glucose reading (mg/dL), check if the value is within the normal range (80–300 mg/dL).
     Indicate whether the reading is too low, normal, or too high, and suggest action if abnormal.
