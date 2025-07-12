@@ -1,0 +1,7 @@
+[project]
+name = "multiagent-app"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["agno", "fastapi", "uvicorn", "httpx", "pydantic", "sqlalchemy", "alembic", "asyncpg", "ag-ui-protocol", "openai"]
