@@ -1,0 +1,14 @@
+# Use Node.js to run dev server
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY ../frontend/package*.json ./
+RUN npm install
+
+COPY ../frontend .
+
+EXPOSE 3000
+
+# Run dev server
+CMD ["npm", "run", "dev"]
