@@ -45,21 +45,82 @@ const agent = {
 
 // Dashboard component
 function Dashboard() {
-  const [cgmData, setCgmData] = useState([]);
-  const [moodData, setMoodData] = useState([]);
+
+  const userId = 100;
+  type CGMEntry = {
+    timestamp: string;
+    glucose_level: number | string;
+  };
+  type MoodLogEntry = {
+    timestamp: string;
+    mood: string;
+  };
+
+  type MoodCountEntry = {
+    mood: string;
+    count: number;
+  };
+
+  const [moodData, setMoodData] = useState<MoodCountEntry[]>([]);
+  const [cgmData, setCgmData] = useState<CGMEntry[]>([]);
   const [foodText, setFoodText] = useState("");
   const [foodLog, setFoodLog] = useState<{ food_log: string } | null>(null);
   const [mealPlan, setMealPlan] = useState<{ meal_plan: string } | null>(null);
+  const [userName, setUserName] = useState<string>("");
 
-
-  const userId = 100;
+  useEffect(() => {
+    fetch(`http://localhost:8000/api/user-greeting?user_id=${userId}`, {
+      method: "POST",
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.first_name) {
+          setUserName(data.first_name);
+          console.log("Fetched first name:", data.first_name);
+        } else {
+          console.error("No first_name found in response:", data);
+        }
+      })
+      .catch(err => console.error("Error fetching user name:", err));
+  }, []);
+    
 
   useEffect(() => {
     fetch(`http://localhost:8000/api/cgm-history?user_id=${userId}`).then(res => res.json()).then(setCgmData);
-    // fetch(`/api/mood-summary?user_id=${userId}`).then(res => res.json()).then(setMoodData);
   }, []);
+  useEffect(() => {
+  fetch(`http://localhost:8000/api/mood-summary?user_id=${userId}`)
+      .then(res => res.json())
+      .then((data: { timestamp: string; mood: string }[]) => {
+        const moodCounts: Record<string, number> = {};
 
+        data.forEach(entry => {
+          const mood = entry.mood.trim().toLowerCase();
+          moodCounts[mood] = (moodCounts[mood] || 0) + 1;
+        });
 
+        const formattedMoodData = Object.entries(moodCounts).map(([mood, count]) => ({
+          mood,
+          count,
+        }));
+
+        console.log("Formatted Mood Data:", formattedMoodData);
+        setMoodData(formattedMoodData);
+      })
+      .catch(err => console.error("Error fetching mood logs:", err));
+  }, [userId]);
+
+  
+
+  const formattedData = cgmData
+    .filter(entry => entry.timestamp && entry.glucose_level)
+    .map(entry => ({
+      timestamp: new Date(entry.timestamp).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short'
+      }),
+      glucose_level: Number(entry.glucose_level)
+    }));
 
 
   const handleLogFood = async () => {
@@ -85,21 +146,36 @@ function Dashboard() {
   };
   return (
     <div className="p-6 space-y-6">
+      {/* ✅ Welcome Message Below */}
+        {userName && (
+          <div className="mt-4 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-800">
+              Welcome, {userName} 👋
+            </h2>
+          </div>
+        )}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Dashboard</h1>
         <p className="text-gray-600">Overview of your Health Care Assistant activities</p>
       </div>
-
+      
       {/* 1. CGM Line Chart */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <h2 className="text-lg font-semibold mb-2">Glucose Readings (Last 7 Days)</h2>
         <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={cgmData}>
+          <LineChart data={formattedData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="timestamp" />
-            <YAxis />
+            <YAxis domain={[60, 320]} /> {/* Adjust based on expected glucose range */}
             <Tooltip />
-            <Line type="monotone" dataKey="glucose_level" stroke="#3b82f6" />
+            <Line
+              type="monotone"
+              dataKey="glucose_level"
+              stroke="#3b82f6"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

@@ -9,6 +9,8 @@ CITIES = ['Chennai', 'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad']
 DIETARY_PREFERENCES = ['vegetarian', 'non-vegetarian', 'vegan']
 MEDICAL_CONDITIONS = ['Type 2 Diabetes', 'Hypertension', 'Celiac Disease', 'High Cholesterol']
 PHYSICAL_LIMITATIONS = ['mobility issues', 'swallowing difficulties', 'none']
+MOODS = ['happy', 'sad', 'anxious', 'neutral', 'energetic', 'tired', 'angry']
+
 
 faker = Faker()
 
@@ -39,14 +41,13 @@ def create_db():
     );
     """)
 
-    # cursor.execute("""
-    #     CREATE TABLE IF NOT EXISTS mood_log (
-    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
-    #         user_id INTEGER NOT NULL,
-    #         mood TEXT NOT NULL,
-    #         timestamp TEXT DEFAULT CURRENT_TIMESTAMP
-    #     );
-    # """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS mood_log (
+            user_id INTEGER NOT NULL,
+            mood TEXT NOT NULL,
+            timestamp TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
 
     conn.commit()
     return conn
@@ -107,7 +108,15 @@ def insert_users_and_cgm(conn, users):
                 cursor.execute("""
                     INSERT INTO cgm_readings (user_id, glucose_level, timestamp)
                     VALUES (?, ?, ?)
-                """, (user_id, ts.isoformat(), glucose))
+                """, (user_id, glucose, ts.isoformat()))
+
+        for j in range(5):
+            mood = random.choice(MOODS)
+            ts = datetime.now() - timedelta(days=random.randint(0, 30), hours=random.randint(0, 23))
+            cursor.execute("""
+                INSERT INTO mood_log (user_id, mood, timestamp)
+                VALUES (?, ?, ?)
+            """, (user_id, mood, ts.isoformat()))
 
     conn.commit()
 
@@ -115,4 +124,4 @@ if __name__ == "__main__":
     conn = create_db()
     users = generate_users()
     insert_users_and_cgm(conn, users)
-    print("SQLite DB created with 100 users and CGM readings where applicable.")
+    print("SQLite DB created with 100 users, mood_logs, and CGM readings where applicable.")
