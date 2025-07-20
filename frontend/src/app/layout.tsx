@@ -11,6 +11,7 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
       <body>
         <CopilotKit 
           runtimeUrl="/api/copilotkit" 
+          agent="agno_agent"
         >
           {children}
         </CopilotKit>

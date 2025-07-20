@@ -6,6 +6,7 @@ import {
   } from "@copilotkit/runtime";
   
   import { AgnoAgent } from "@ag-ui/agno"
+  import { AbstractAgent } from "@ag-ui/client"
   // import { AgnoTeam } from "@ag-ui/agno"
 
   import { NextRequest } from "next/server";
@@ -21,10 +22,9 @@ import {
    
   const serviceAdapter = new OpenAIAdapter({ openai });
   
-  // 2. Create the CopilotRuntime instance with four agents
+  // 2. Create the CopilotRuntime
   const runtime = new CopilotRuntime({
     agents: {
-      // Agent 0:
       "agno_agent": new AgnoAgent({
         url: "http://localhost:8000/agui"
       }),
